@@ -1,6 +1,8 @@
 import streamlit as st
 from openai import OpenAI
 
+with st.chat_message("user"):
+    st.write("Hello!")
 # Show title and description.
 st.title("💬 Chatbot")
 st.write(
