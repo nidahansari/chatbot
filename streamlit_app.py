@@ -3,6 +3,7 @@ from openai import OpenAI
 
 with st.chat_message("user"):
     st.write("Hello!")
+    """
 # Show title and description.
 st.title("💬 Chatbot")
 st.write(
@@ -56,3 +57,4 @@ else:
         with st.chat_message("assistant"):
             response = st.write_stream(stream)
         st.session_state.messages.append({"role": "assistant", "content": response})
+        """
