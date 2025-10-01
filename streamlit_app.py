@@ -1,6 +1,6 @@
 import streamlit as st
 import random
-import time
+import time  # <- needed for sleep
 
 st.set_page_config(page_title="TigerChat 🐯")
 st.title("TigerChat 🐯")
@@ -33,7 +33,7 @@ if prompt:
     with st.chat_message("assistant"):
         placeholder = st.empty()
 
-        # Mock GPT logic: simple canned responses or random selection
+        # Mock GPT logic: canned responses
         canned_responses = [
             "Hello! How can I help you today?",
             "Interesting! Tell me more.",
@@ -42,24 +42,18 @@ if prompt:
             "That sounds great! What else?"
         ]
         
-        # Simulate typing effect
+        # Pick a random response
         response_text = random.choice(canned_responses)
         full_response = ""
+
+        # Simulate typing effect
         for char in response_text:
             full_response += char
             placeholder.markdown(full_response + "▌")
-            st.sleep(0.05)  # simulate typing
+            time.sleep(0.05)  # <-- correct sleep
 
+        # Finalize message
         placeholder.markdown(full_response)
 
         # Add assistant message to history
         st.session_state["messages"].append({"role": "assistant", "content": full_response})
-        # Simulate typing effect
-response_text = random.choice(canned_responses)
-full_response = ""
-for char in response_text:
-    full_response += char
-    placeholder.markdown(full_response + "▌")
-    time.sleep(0.05)  # <-- use time.sleep instead of st.sleep
-
-placeholder.markdown(full_response)
