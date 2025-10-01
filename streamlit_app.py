@@ -1,23 +1,27 @@
 from openai import OpenAI
 import streamlit as st
 
-# Initialize OpenAI client
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+# ⚠️ Replace with your actual key
+client = OpenAI(api_key="sk-xxxxxxx")
 
 st.title("TigerChat 🐯")
 
+# Set model
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-3.5-turbo"
 
+# Initialize history
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# Display history
+# Show history
 for message in st.session_state["messages"]:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# User input
 prompt = st.chat_input("Hello! How may I help you today?")
+
 if prompt:
     st.session_state["messages"].append({"role": "user", "content": prompt})
     with st.chat_message("user"):
@@ -37,7 +41,6 @@ if prompt:
         )
 
         for chunk in response_stream:
-            # `chunk` is a Pydantic model, not a dict
             delta = chunk.choices[0].delta.content or ""
             full_response += delta
             placeholder.markdown(full_response + "▌")
