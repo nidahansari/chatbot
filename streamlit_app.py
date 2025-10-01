@@ -29,10 +29,18 @@ with st.chat_message("assistant"):
     message_placeholder = st.empty()
     full_response = ""
     for response in openai.ChatCompletion.create(
-        model=st.session_state["openai_model"],
-        messages=[
-            {"role": ,["role"], "content": ,["content"]}
-            for m in st.session_state.messages
+    model=st.session_state["openai_model"],
+    messages=[
+        {"role": m["role"], "content": m["content"]}
+        for m in st.session_state.messages
+    ],
+    stream=True,
+):
+    if "choices" in response and len(response.choices) > 0:
+        delta = response.choices[0].delta.get("content", "")
+        full_response += delta
+        message_placeholder.markdown(full_response + "▌")
+
     ],
     stream=True,
 ):
