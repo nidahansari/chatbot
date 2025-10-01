@@ -1,7 +1,6 @@
 from openai import OpenAI
 import streamlit as st
 
-# ⚠️ Replace with your actual key
 client = OpenAI(api_key="sk-...tQsA")
 
 st.title("TigerChat 🐯")
