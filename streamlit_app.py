@@ -1,19 +1,11 @@
 import streamlit as st
-from openai import OpenAI
-
-# -------------------------------
-# Initialize OpenAI client
-# -------------------------------
-# Make sure you added your key in Streamlit Secrets:
-# OPENAI_API_KEY = "sk-your-key"
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+import random
 
 st.set_page_config(page_title="TigerChat 🐯")
-
-st.title("TigerChat 🐯 - Free Trial Friendly")
+st.title("TigerChat 🐯")
 
 # -------------------------------
-# Initialize session state
+# Initialize chat history
 # -------------------------------
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
@@ -36,30 +28,28 @@ if prompt:
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Assistant response placeholder
+    # Assistant response
     with st.chat_message("assistant"):
         placeholder = st.empty()
+
+        # Mock GPT logic: simple canned responses or random selection
+        canned_responses = [
+            "Hello! How can I help you today?",
+            "Interesting! Tell me more.",
+            "I'm here to chat with you.",
+            "Can you clarify that for me?",
+            "That sounds great! What else?"
+        ]
+        
+        # Simulate typing effect
+        response_text = random.choice(canned_responses)
         full_response = ""
+        for char in response_text:
+            full_response += char
+            placeholder.markdown(full_response + "▌")
+            st.sleep(0.05)  # simulate typing
 
-        # Only keep the last 5 messages to save tokens
-        history = st.session_state["messages"][-5:]
+        placeholder.markdown(full_response)
 
-        try:
-            # Stream the response from OpenAI
-            for chunk in client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=history,
-                stream=True
-            ):
-                delta = chunk.choices[0].delta.content or ""
-                full_response += delta
-                placeholder.markdown(full_response + "▌")
-
-            # Finalize assistant message
-            placeholder.markdown(full_response)
-            st.session_state["messages"].append(
-                {"role": "assistant", "content": full_response}
-            )
-
-        except Exception as e:
-            st.error(f"Error: {e}")
+        # Add assistant message to history
+        st.session_state["messages"].append({"role": "assistant", "content": full_response})
