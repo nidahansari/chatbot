@@ -1,5 +1,6 @@
 import streamlit as st
 import random
+import time
 
 st.set_page_config(page_title="TigerChat 🐯")
 st.title("TigerChat 🐯")
@@ -53,3 +54,12 @@ if prompt:
 
         # Add assistant message to history
         st.session_state["messages"].append({"role": "assistant", "content": full_response})
+        # Simulate typing effect
+response_text = random.choice(canned_responses)
+full_response = ""
+for char in response_text:
+    full_response += char
+    placeholder.markdown(full_response + "▌")
+    time.sleep(0.05)  # <-- use time.sleep instead of st.sleep
+
+placeholder.markdown(full_response)
