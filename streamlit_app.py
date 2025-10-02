@@ -1,34 +1,24 @@
 import streamlit as st
 from openai import OpenAI
 
-# -------------------------------
-# Initialize OpenAI client
-# -------------------------------
-# Make sure you added your key in Streamlit Secrets:
 # OPENAI_API_KEY = "sk-your-key"
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 st.set_page_config(page_title="TigerChat 🐯")
 
-st.title("TigerChat 🐯 - Free Trial Friendly")
+st.title("TigerChat 🐯")
 
-# -------------------------------
 # Initialize session state
-# -------------------------------
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# -------------------------------
 # Display chat history
-# -------------------------------
 for msg in st.session_state["messages"]:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# -------------------------------
 # User input
-# -------------------------------
-prompt = st.chat_input("Type your message here...")
+prompt = st.chat_input("Hello! How can I help you?")
 
 if prompt:
     # Add user message to history
