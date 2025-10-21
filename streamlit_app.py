@@ -1,51 +1,59 @@
 import streamlit as st
 from openai import OpenAI
 
-# --- PAGE SETUP ---
-st.set_page_config(page_title="AI Chatbot", page_icon="💬")
-st.title("💬 AI Chatbot with Streamlit + OpenAI")
+# ------------------------------------------------------------
+# 🐯 Use API key from Streamlit secrets
+# ------------------------------------------------------------
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-st.write(
-    "This chatbot uses OpenAI's GPT model to answer your questions. "
-    "To use this app, provide your OpenAI API key below. "
-    "You can obtain one from [OpenAI](https://platform.openai.com/account/api-keys)."
-)
+# ------------------------------------------------------------
+# 🐯 TigerChat UI
+# ------------------------------------------------------------
+st.set_page_config(page_title="TigerChat 🐯")
+st.title("TigerChat 🐯")
 
-# --- GET OPENAI API KEY ---
-openai_api_key = st.text_input("🔑 Enter your OpenAI API Key", type="password")
+# Initialize session state
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
 
-if not openai_api_key:
-    st.info("Please enter your API key to continue.", icon="🗝️")
-else:
-    client = OpenAI(api_key=openai_api_key)
+# Display chat history
+for msg in st.session_state["messages"]:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
 
-    # --- CHAT HISTORY ---
-    if "messages" not in st.session_state:
-        st.session_state.messages = [
-            {"role": "system", "content": "You are a helpful assistant that provides accurate, concise answers."}
-        ]
+# User input
+prompt = st.chat_input("Hello! How can I help you?")
 
-    # --- DISPLAY PREVIOUS MESSAGES ---
-    for msg in st.session_state.messages:
-        if msg["role"] != "system":
-            with st.chat_message(msg["role"]):
-                st.markdown(msg["content"])
+if prompt:
+    # Add user message to history
+    st.session_state["messages"].append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
-    # --- USER INPUT ---
-    if prompt := st.chat_input("Ask me anything..."):
-        # Add user input
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+    # Assistant response placeholder
+    with st.chat_message("assistant"):
+        placeholder = st.empty()
+        full_response = ""
 
-        # --- GENERATE RESPONSE ---
-        with st.chat_message("assistant"):
-            stream = client.chat.completions.create(
+        # Only keep the last 5 messages to save tokens
+        history = st.session_state["messages"][-5:]
+
+        try:
+            # Stream the response from OpenAI
+            for chunk in client.chat.completions.create(
                 model="gpt-3.5-turbo",
-                messages=st.session_state.messages,
-                stream=True,
-            )
-            response = st.write_stream(stream)
+                messages=history,
+                stream=True
+            ):
+                delta = chunk.choices[0].delta.content or ""
+                full_response += delta
+                placeholder.markdown(full_response + "▌")
 
-        # Save the assistant’s reply
-        st.session_state.messages.append({"role": "assistant", "content": response})
+            # Finalize assistant message
+            placeholder.markdown(full_response)
+            st.session_state["messages"].append(
+                {"role": "assistant", "content": full_response}
+            )
+
+        except Exception as e:
+            st.error(f"Error: {e}")
