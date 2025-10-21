@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 import PyPDF2  # using PyPDF2 this time
 
-# 🐯 Use API key from Streamlit secrets
+# Use API key from Streamlit secrets
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # TigerChat UI
