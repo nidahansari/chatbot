@@ -1,14 +1,10 @@
 import streamlit as st
 from openai import OpenAI
 
-# ------------------------------------------------------------
 # 🐯 Use API key from Streamlit secrets
-# ------------------------------------------------------------
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# ------------------------------------------------------------
-# 🐯 TigerChat UI
-# ------------------------------------------------------------
+# TigerChat UI
 st.set_page_config(page_title="TigerChat 🐯")
 st.title("TigerChat 🐯")
 
