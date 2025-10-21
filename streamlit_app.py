@@ -1,6 +1,6 @@
 import streamlit as st
 from openai import OpenAI
-import pdfplumber  # using pdfplumber instead of PyPDF2
+import PyPDF2  # using PyPDF2 this time
 
 # 🐯 Use API key from Streamlit secrets
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -13,11 +13,12 @@ st.title("TigerChat 🐯")
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# Function to read PDF text using pdfplumber
+# Function to read PDF text using PyPDF2
 def read_pdf(file_path):
     text = ""
-    with pdfplumber.open(file_path) as pdf:
-        for page in pdf.pages:
+    with open(file_path, "rb") as f:
+        reader = PyPDF2.PdfReader(f)
+        for page in reader.pages:
             page_text = page.extract_text()
             if page_text:
                 text += page_text + "\n"
